@@ -74,4 +74,5 @@ public class MainActivity extends ActionBarActivity {
             Log.d(LOG_TAG, "Couldn't call " + location + ", no receiving apps installed!");
         }
     }
+
 }
