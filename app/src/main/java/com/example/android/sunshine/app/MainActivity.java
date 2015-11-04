@@ -14,7 +14,8 @@ import com.example.android.sunshine.app.ForecastFragment;
 
 import java.net.URI;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ActionBarActivity {
+//    public class MainActivity extends AppCompatActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
