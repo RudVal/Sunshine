@@ -20,8 +20,50 @@ public class MainActivity extends ActionBarActivity {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
+    // The activity is about to become visible.
+    protected void onStart() {
+        Log.d(LOG_TAG, "onStart called");
+        super.onStart();
+
+    }
+
+    @Override
+    // The activity has become visible (it is now "resumed").
+    protected void onResume() {
+        Log.d(LOG_TAG, "onResume called");
+        super.onResume();
+
+    }
+
+    @Override
+    // Another activity is taking focus (this activity is about to be "paused").
+    protected void onPause() {
+        Log.d(LOG_TAG, "onPause called");
+        super.onPause();
+
+    }
+
+    @Override
+    // The activity is about to be destroyed.
+    protected void onDestroy() {
+        Log.d(LOG_TAG, "onDestroy called");
+        super.onDestroy();
+
+    }
+
+    @Override
+    // The activity is no longer visible (it is now "stopped")
+    protected void onStop() {
+        Log.d(LOG_TAG, "onStop called");
+        super.onStop();
+
+    }
+
+    @Override
+    // The activity is being created.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(LOG_TAG, "onCreate called");
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
