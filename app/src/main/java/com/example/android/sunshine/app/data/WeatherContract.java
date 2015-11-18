@@ -60,9 +60,10 @@ public class WeatherContract {
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();
-
+            // CURSOR_DIR_BASE_TYPE = "vnd.android.cursor.dir"
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;
+         // CURSOR_ITEM_BASE_TYPE = "vnd.android.cursor.item"
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_LOCATION;
 
@@ -90,8 +91,10 @@ public class WeatherContract {
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_WEATHER).build();
 
+        // CURSOR_DIR_BASE_TYPE = "vnd.android.cursor.dir"
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WEATHER;
+        // CURSOR_ITEM_BASE_TYPE = "vnd.android.cursor.item"
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WEATHER;
 
