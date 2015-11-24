@@ -15,9 +15,12 @@
  */
 package com.example.android.sunshine.app;
 
+        import android.content.ContentUris;
         import android.content.ContentValues;
         import android.content.Context;
         import android.content.SharedPreferences;
+        import android.database.Cursor;
+        import android.database.sqlite.SQLiteDatabase;
         import android.net.Uri;
         import android.os.AsyncTask;
         import android.preference.PreferenceManager;
@@ -25,7 +28,9 @@ package com.example.android.sunshine.app;
         import android.util.Log;
         import android.widget.ArrayAdapter;
 
+        import com.example.android.sunshine.app.data.WeatherContract;
         import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
+        import com.example.android.sunshine.app.data.WeatherDbHelper;
 
         import org.json.JSONArray;
         import org.json.JSONException;
@@ -37,9 +42,12 @@ package com.example.android.sunshine.app;
         import java.io.InputStreamReader;
         import java.net.HttpURLConnection;
         import java.net.URL;
+        import java.net.URLConnection;
         import java.text.SimpleDateFormat;
         import java.util.Date;
         import java.util.Vector;
+
+        import javax.net.ssl.HttpsURLConnection;
 
 public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
@@ -47,6 +55,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
     private ArrayAdapter<String> mForecastAdapter;
     private final Context mContext;
+    private WeatherDbHelper mOpenHelper;
 
     public FetchWeatherTask(Context context, ArrayAdapter<String> forecastAdapter) {
         mContext = context;
@@ -105,11 +114,55 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
      * @param lon the longitude of the city
      * @return the row ID of the added location.
      */
+/*    long addLocation(String locationSetting, String cityName, double lat, double lon) {
+        long locationId;
+        Cursor locationCursor = mContext.getContentResolver().query(
+        WeatherContract.LocationEntry.CONTENT_URI,
+        new String[]{WeatherContract.LocationEntry._ID},
+        WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? ",
+        new String[]{locationSetting}, null);
+
+        if(locationCursor.moveToFirst()) {
+            int locationIdIndex = locationCursor.getColumnIndex(WeatherContract.LocationEntry._ID);
+            locationId = locationCursor.getLong(locationIdIndex);
+        }else {
+            ContentValues locationValues = new ContentValues();
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,locationSetting);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT,lat);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG,lon);
+
+            Uri insertedUri = mContext.getContentResolver().insert(
+                    WeatherContract.LocationEntry.CONTENT_URI, locationValues );
+            locationId = ContentUris.parseId(insertedUri);
+        }
+        return locationId;
+    }
+*/
     long addLocation(String locationSetting, String cityName, double lat, double lon) {
         // Students: First, check if the location with this city name exists in the db
         // If it exists, return the current ID
         // Otherwise, insert it using the content resolver and the base URI
-        return -1;
+        Cursor mCursor;
+        long insertId;
+        mOpenHelper = new WeatherDbHelper(mContext);
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        mCursor =db.query(WeatherContract.LocationEntry.TABLE_NAME, new String[]{
+                        WeatherContract.LocationEntry._ID,
+                        WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING },
+                        WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? ",
+                        new String[]{locationSetting}, null, null, null, null);
+        if (!mCursor.moveToFirst()) {
+            ContentValues locationValues = new ContentValues();
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, Double.toString(lat));
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, Double.toString(lon));
+
+            insertId = db.insert(WeatherContract.LocationEntry.TABLE_NAME,null,locationValues);
+        } else
+            insertId = mCursor.getLong(0);
+        return insertId;
     }
 
     /*
@@ -344,13 +397,18 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
             URL url = new URL(builtUri.toString());
 
+            try {
+
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
-
+            }catch (IOException uc) {
+                Log.e(LOG_TAG, "Connection Error " + uc.toString());
+                return null;
+            }
             // Read the input stream into a String
-            InputStream inputStream = urlConnection.getInputStream();
+             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
                 // Nothing to do.
@@ -372,7 +430,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             }
             forecastJsonStr = buffer.toString();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
+            Log.e(LOG_TAG, "Error in doInBackground", e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
             return null;
