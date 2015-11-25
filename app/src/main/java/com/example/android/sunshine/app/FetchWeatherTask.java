@@ -15,11 +15,11 @@
  */
 package com.example.android.sunshine.app;
 
-        import android.content.ContentUris;
         import android.content.ContentValues;
         import android.content.Context;
         import android.content.SharedPreferences;
         import android.database.Cursor;
+        import android.database.DatabaseUtils;
         import android.database.sqlite.SQLiteDatabase;
         import android.net.Uri;
         import android.os.AsyncTask;
@@ -42,12 +42,9 @@ package com.example.android.sunshine.app;
         import java.io.InputStreamReader;
         import java.net.HttpURLConnection;
         import java.net.URL;
-        import java.net.URLConnection;
         import java.text.SimpleDateFormat;
         import java.util.Date;
         import java.util.Vector;
-
-        import javax.net.ssl.HttpsURLConnection;
 
 public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
@@ -318,6 +315,9 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
             // add to database
             if ( cVVector.size() > 0 ) {
+                ContentValues[] cValues = new ContentValues[cVVector.size()];
+                cVVector.toArray(cValues);
+                mContext.getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI,cValues);
                 // Student: call bulkInsert to add the weatherEntries to the database here
             }
 
@@ -328,17 +328,17 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
             // Students: Uncomment the next lines to display what what you stored in the bulkInsert
 
-//            Cursor cur = mContext.getContentResolver().query(weatherForLocationUri,
-//                    null, null, null, sortOrder);
-//
-//            cVVector = new Vector<ContentValues>(cur.getCount());
-//            if ( cur.moveToFirst() ) {
-//                do {
-//                    ContentValues cv = new ContentValues();
-//                    DatabaseUtils.cursorRowToContentValues(cur, cv);
-//                    cVVector.add(cv);
-//                } while (cur.moveToNext());
-//            }
+            Cursor cur = mContext.getContentResolver().query(weatherForLocationUri,
+                    null, null, null, sortOrder);
+
+            cVVector = new Vector<ContentValues>(cur.getCount());
+            if ( cur.moveToFirst() ) {
+                do {
+                    ContentValues cv = new ContentValues();
+                    DatabaseUtils.cursorRowToContentValues(cur, cv);
+                    cVVector.add(cv);
+                } while (cur.moveToNext());
+            }
 
             Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
 
@@ -350,7 +350,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             e.printStackTrace();
         }
         return null;
-    }
+    }  // end of getWeatherDataFromJson
 
     @Override
     protected String[] doInBackground(String... params) {
@@ -373,6 +373,9 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         String units = "metric";
         int numDays = 14;
         String APPID = "f3a97395111e5f4669663fb573a32cdd";
+
+//        String urlStr = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
+//        String urlStr1 = "http://api.openweathermap.org/data/2.5/forecast/daily?q=Berlin&mode=json&units=metric&cnt=7&city=%22Mountain%20View%22&APPID=f3a97395111e5f4669663fb573a32cdd";
 
         try {
             // Construct the URL for the OpenWeatherMap query
@@ -430,7 +433,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             }
             forecastJsonStr = buffer.toString();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error in doInBackground", e);
+            Log.e(LOG_TAG, "Error in doInBackground: " + e.toString(), e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
             return null;
