@@ -18,6 +18,8 @@ public class MainActivity extends ActionBarActivity {
 //    public class MainActivity extends AppCompatActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final  String FORECASTFRAGMENT_TAG = "FFTAG";
+    private String mLocation;
 
     @Override
     // The activity is about to become visible.
@@ -30,9 +32,15 @@ public class MainActivity extends ActionBarActivity {
     @Override
     // The activity has become visible (it is now "resumed").
     protected void onResume() {
-        Log.d(LOG_TAG, "onResume called");
+        Log.d(LOG_TAG, "MainActivity.onResume called");
         super.onResume();
-
+        String location = Utility.getPreferredLocation(this);
+        if(location != null && !location.equals( mLocation) ) {
+            ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().
+                    findFragmentByTag(FORECASTFRAGMENT_TAG);
+            if(ff != null) ff.onLocationChanged();
+            mLocation = location;
+        }
     }
 
     @Override
@@ -63,11 +71,12 @@ public class MainActivity extends ActionBarActivity {
     // The activity is being created.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLocation = Utility.getPreferredLocation(this);
         Log.d(LOG_TAG, "onCreate called");
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment())
+                    .add(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
 //                    .add(R.id.container, new ForecastFragment())
                     .commit();
         }
