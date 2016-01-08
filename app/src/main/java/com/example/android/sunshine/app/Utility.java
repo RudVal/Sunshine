@@ -30,6 +30,15 @@ public class Utility {
     // back into date objects for comparison/processing.
     public static final String DATE_FORMAT = "yyyyMMdd";
 
+    static String formatTemperature(Context context, double temperature, boolean isMetric) {
+        double temp;
+        if (!isMetric) {
+            temp = 9*temperature/5+32;
+        }  else {
+            temp = temperature;
+        }
+        return context.getString(R.string.format_temperature, temp);
+    }
     /**
      * Helper method to convert the database representation of the date into something to display
      * to users.  As classy and polished a user experience as "20140102" is, we can do better.
