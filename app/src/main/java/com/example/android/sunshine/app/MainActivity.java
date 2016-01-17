@@ -77,7 +77,6 @@ public class MainActivity extends ActionBarActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
-//                    .add(R.id.container, new ForecastFragment())
                     .commit();
         }
     }

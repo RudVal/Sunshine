@@ -44,9 +44,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
     private final Context mContext;
-//    private WeatherDbHelper mOpenHelper;
 
-//    public FetchWeatherTask(Context context, ArrayAdapter<String> forecastAdapter) {
     public FetchWeatherTask(Context context) {
         mContext = context;
     }

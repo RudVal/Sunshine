@@ -12,8 +12,6 @@ package com.example.android.sunshine.app;
  import android.widget.ImageView;
  import android.widget.TextView;
 
-        import com.example.android.sunshine.app.data.WeatherContract;
-
 /**
  * {@link ForecastAdapter} exposes a list of weather forecasts
  * from a {@link android.database.Cursor} to a {@link android.widget.ListView}.
