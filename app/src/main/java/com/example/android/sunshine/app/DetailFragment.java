@@ -34,7 +34,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int DETAIL_LOADER = 0;
 
-    private static final String[] FORECAST_COLUMNS = {
+    private static final String[] DETAIL_COLUMNS = {
             WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
             WeatherContract.WeatherEntry.COLUMN_DATE,
             WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
@@ -135,7 +135,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         }
         return new CursorLoader(getActivity(),
                 intent.getData(),
-                FORECAST_COLUMNS,
+                DETAIL_COLUMNS,
                 null,
                 null,
                 null);
@@ -151,7 +151,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if(cursor != null && cursor.moveToFirst()) {
             // Read weather condition ID from cursor
         int weatherId = cursor.getInt(COL_WEATHER_CONDITION_ID);
-            mIconView.setImageResource(R.drawable.ic_launcher);
+
+            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
             // read date from cursor and update views for day and date
             long date = cursor.getLong(COL_WEATHER_DATE);
