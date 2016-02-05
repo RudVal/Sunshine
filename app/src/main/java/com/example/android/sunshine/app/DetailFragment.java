@@ -211,6 +211,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             return;
         }
     }
+
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 //            mForecastAdapter.swapCursor(null);
