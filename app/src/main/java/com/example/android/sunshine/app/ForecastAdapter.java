@@ -22,6 +22,9 @@ public class ForecastAdapter extends CursorAdapter {
     private static final int VIEW_TYPE_FUTURE_DAY = 1;
     private static final int VIEW_TYPE_COUNT = 2;
 
+    // using separate view for today or not
+    private boolean mUseTodayLayout = true;
+
     /**
      * Cache of the children views for a forecast list item.
      */
@@ -45,9 +48,14 @@ public class ForecastAdapter extends CursorAdapter {
         super(context, c, flags);
     }
 
+
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
+    }
+
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
+        return (position == 0 && mUseTodayLayout) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 
     @Override
@@ -82,7 +90,7 @@ public class ForecastAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         // Read weather icon ID from cursor
-        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
+//        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
         int viewType = getItemViewType(cursor.getPosition());
         switch (viewType) {
             case VIEW_TYPE_TODAY: {
@@ -92,8 +100,8 @@ public class ForecastAdapter extends CursorAdapter {
                 break;
             }
             case VIEW_TYPE_FUTURE_DAY : {
-                    viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
-                            cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)
+                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
+                         cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)
                     ));
                 break;
             }
