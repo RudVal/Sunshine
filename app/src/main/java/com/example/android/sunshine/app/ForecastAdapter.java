@@ -117,6 +117,9 @@ public class ForecastAdapter extends CursorAdapter {
 //        TextView weatherView = (TextView)view.findViewById(R.id.list_item_forecast_textview);
         viewHolder.descriptionView.setText(weatherDescrStr);
 
+        // For accessibility, add a content description to the icon field
+        viewHolder.iconView.setContentDescription(weatherDescrStr);
+
         // Read user preference for metric or imperial temperature units
         boolean isMetric = Utility.isMetric(context);
 

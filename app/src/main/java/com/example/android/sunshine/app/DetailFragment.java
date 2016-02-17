@@ -1,5 +1,6 @@
 package com.example.android.sunshine.app;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -71,6 +74,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView mHumidityView;
     private TextView mWindView;
     private TextView mPressureView;
+    private ImageView mCompassView;
+    private ImageView mNeedleView;
+    private FrameLayout mCompassLayout;
 
 
     public DetailFragment() {
@@ -95,6 +101,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mHumidityView = (TextView)rootView.findViewById(R.id.detail_humidity_textview);
         mWindView = (TextView)rootView.findViewById(R.id.detail_wind_textview);
         mPressureView = (TextView)rootView.findViewById(R.id.detail_pressure_textview);
+
+        mCompassView = (ImageView)rootView.findViewById(R.id.compassView1);
+        mCompassView.setImageResource(R.drawable.art_compass);
+//        mCompassView = (ImageView)rootView.findViewWithTag(R.drawable.art_compass);
+//        mNeedleView = (ImageView)rootView.findViewWithTag(R.drawable.art_compass_needle);
+        mNeedleView = (ImageView)rootView.findViewById(R.id.compass_needle);
+        mNeedleView.setImageResource(R.drawable.art_compass_needle);
+//        mNeedleView.setImageResource(R.drawable.art_compass_needle);
+//        Activity myActivity = getActivity();
+        mCompassLayout = (FrameLayout)getActivity().findViewById(R.id.farmeLayout1);
 
         return rootView;
     }
@@ -173,6 +189,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             String description = cursor.getString(COL_WEATHER_DESC);
             mDescriptionView.setText(description);
 
+            // For accessibility, add a content description to the icon field
+            mIconView.setContentDescription(description);
+
             // read high temperature from cursor and update view
             boolean isMetric = Utility.isMetric(getActivity());
 
@@ -198,6 +217,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             float press = cursor.getFloat(COL_WEATHER_PRESSURE);
             mPressureView.setText(getActivity().getString(R.string.format_pressure, press));
 
+            // rotate needle according wind direction
+            mNeedleView.setRotation(-45.0f + direction);
 
             mForecastStr = String.format("%s - %s - %s/%s", dateText,
                     description, highTemp, lowTemp);
