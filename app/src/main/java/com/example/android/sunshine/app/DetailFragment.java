@@ -25,6 +25,8 @@ import android.widget.TextView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
 
+import junit.framework.Assert;
+
 /**
  * Created by Valeri on 16.01.2016.
  */
@@ -90,8 +92,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if(arguments != null) {
             mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
         }
-
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        View rootView = null;
+        try {
+            rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        }catch (Exception e) {
+            String exception =e.toString();
+            Assert.fail("unexpected InterruptedException");
+        }
         mIconView = (ImageView) rootView.findViewById(R.id.detail_icon);
         mDateView = (TextView) rootView.findViewById(R.id.detail_date_textview);
         mFriendlyDateView = (TextView)rootView.findViewById(R.id.detail_day_textview);
@@ -106,8 +113,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mCompassView.setImageResource(R.drawable.art_compass);
 //        mCompassView = (ImageView)rootView.findViewWithTag(R.drawable.art_compass);
 //        mNeedleView = (ImageView)rootView.findViewWithTag(R.drawable.art_compass_needle);
-        mNeedleView = (ImageView)rootView.findViewById(R.id.compass_needle);
-        mNeedleView.setImageResource(R.drawable.art_compass_needle);
+//        mNeedleView = (ImageView)rootView.findViewById(R.id.compass_needle);
+        try {
+            mNeedleView = (ImageView) rootView.findViewById(R.id.custom_needle_view);
+        } catch (Exception e) {
+            String exception =e.toString();
+            Assert.fail("unexpected InterruptedException");
+        }
+//        mNeedleView.setImageResource(R.drawable.art_compass_needle);
+
 //        mNeedleView.setImageResource(R.drawable.art_compass_needle);
 //        Activity myActivity = getActivity();
         mCompassLayout = (FrameLayout)getActivity().findViewById(R.id.farmeLayout1);
@@ -218,7 +232,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             mPressureView.setText(getActivity().getString(R.string.format_pressure, press));
 
             // rotate needle according wind direction
-            mNeedleView.setRotation(-45.0f + direction);
+            mNeedleView.setRotation( direction);
 
             mForecastStr = String.format("%s - %s - %s/%s", dateText,
                     description, highTemp, lowTemp);
