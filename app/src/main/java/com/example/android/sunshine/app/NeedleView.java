@@ -8,9 +8,8 @@ import android.graphics.Path;
 import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.util.AttributeSet;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
-
-import java.util.jar.Attributes;
 
 /**
  * Created by Valeri on 10.02.2016.
@@ -28,18 +27,22 @@ public class NeedleView extends ImageView {
 
     public NeedleView(Context context) {
         super(context);
- //       init();
     }
 
     public NeedleView(Context context, AttributeSet attr) {
         super(context, attr);
-//        init();
     }
 
     public NeedleView(Context context, AttributeSet attr, int defaultStyle) {
         super(context, attr, defaultStyle);
-//        init();
     }
+
+//    @Override
+//    public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) {
+//        return super.dispatchPopulateAccessibilityEvent(event);
+//        event.getText().add(widSpeedDir);
+//        return true;
+//    }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
