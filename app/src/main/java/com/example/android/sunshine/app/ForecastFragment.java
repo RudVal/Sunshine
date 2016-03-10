@@ -1,13 +1,7 @@
 package com.example.android.sunshine.app;
 
-import android.app.AlarmManager;
-import android.app.IntentService;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -23,7 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
-import com.example.android.sunshine.app.service.SunshineService;
+import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 
 /**
  * Created by Valeri on 15.10.2015.
@@ -114,19 +108,23 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 //        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, location);
 //        getActivity().startService(intent);
 
-        AlarmManager alarmMgr = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
-        Intent intentA = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
-        intentA.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
-                Utility.getPreferredLocation(getActivity()));
+            // using PendingIntent
+//        AlarmManager alarmMgr = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+//        Intent intentA = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+//        intentA.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+//                Utility.getPreferredLocation(getActivity()));
+//        PendingIntent pendIntent = PendingIntent.getBroadcast(getActivity(),0,
+//                intentA, PendingIntent.FLAG_ONE_SHOT);
+//        alarmMgr.set(AlarmManager.RTC_WAKEUP,
+//                SystemClock.elapsedRealtime() + 5000, pendIntent);
 
-        PendingIntent pendIntent = PendingIntent.getBroadcast(getActivity(),0,
-                intentA, PendingIntent.FLAG_ONE_SHOT);
-        alarmMgr.set(AlarmManager.RTC_WAKEUP,
-                SystemClock.elapsedRealtime() + 5000, pendIntent);
-
+            // using FetchWeatherTask class
 //        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
 //        String location = Utility.getPreferredLocation(getActivity());
 //        weatherTask.execute(location);
+
+            // using SyncAdapter
+        SunshineSyncAdapter.syncImmediately(getActivity());
     }
 
     public void setUseTodayLayout(boolean useTodayLayout) {
