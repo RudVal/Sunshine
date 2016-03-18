@@ -1,12 +1,16 @@
 package com.example.android.sunshine.app;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.CursorLoader;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +28,7 @@ import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
  */
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private ForecastAdapter mForecastAdapter;
     private static final int FORECAST_LOADER = 0;
     private ListView mListView;
@@ -95,11 +100,56 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_refresh) {
-            updateWeather();
-           return true;
+//        if (id == R.id.action_refresh) {
+//            updateWeather();
+//           return true;
+//        }
+        if(id == R.id.action_map) {
+            openPreferredLocationInMap();
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openPreferredLocationInMap() {
+
+        // Using the URI scheme for showing a location found on a map.  This super-handy
+        // intent can is detailed in the "Common Intents" page of Android's developer site:
+        // http://developer.android.com/guide/components/intents-common.html#Maps
+            if ( null != mForecastAdapter ) {
+                Cursor c = mForecastAdapter.getCursor();
+                if ( null != c ) {
+                    c.moveToPosition(0);
+                    String posLat = c.getString(COL_COORD_LAT);
+                    String posLong = c.getString(COL_COORD_LONG);
+                    Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(geoLocation);
+
+                    if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                        startActivity(intent);
+                    } else {
+                       Log.d(LOG_TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
+                    }
+                }
+
+            }
+/*        SharedPreferences sharedPrefs =
+                PreferenceManager.getDefaultSharedPreferences(getContext());
+        String location = sharedPrefs.getString(
+                getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q", location).build();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Log.d(LOG_TAG, "Couldn't call " + location + ", no receiving apps installed!");
+        }  */
     }
 
     private void updateWeather() {
@@ -233,7 +283,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     public void onLocationChanged() {
         updateWeather();
-        getLoaderManager().restartLoader(FORECAST_LOADER,null, this);
+        getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
     }
 
 }  // end of ForecastFragment
